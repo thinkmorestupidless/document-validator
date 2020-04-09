@@ -1,0 +1,58 @@
+apiVersion: "apps/v1"
+kind: Deployment
+metadata:
+  name: document-validator-backend
+  labels: 
+    app: document-validator-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: document-validator
+  template:
+    metadata:
+      labels:
+        app: document-validator
+    spec:
+      containers:
+        - name: document-validator
+          image: "thinkmorestupidless/document-validator:1-651bcf1c-20200408-1513"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: JAVA_OPTS
+              value: "-Xms256m -Xmx256m -Dconfig.resource=application.k8s.conf"
+            - name: REQUIRED_CONTACT_POINT_NR
+              value: "2"
+            - name: AKKA_CLUSTER_ROLE
+              value: "back-end"
+            - name: POSTGRES_URL
+              value: "jdbc:postgresql://postgresql-1-postgresql-svc.postgresql-1.svc.cluster.local/document_validator"
+            - name: POSTGRES_USER
+              value: "document_validator"
+            - name: POSTGRES_PASSWORD
+              value: "document_validator"
+          resources:
+            limits:
+              memory: 512Mi
+            requests:
+              cpu: 0.25
+              memory: 512Mi
+          ports:
+            - name: management
+              containerPort: 8558
+            - name: http
+              containerPort: 9000
+          readinessProbe:
+            httpGet:
+              path: "/ready"
+              port: management
+            periodSeconds: 10
+            failureThreshold: 10
+            initialDelaySeconds: 20
+          livenessProbe:
+            httpGet:
+              path: "/alive"
+              port: management
+            periodSeconds: 10
+            failureThreshold: 10
+            initialDelaySeconds: 20

@@ -1,5 +1,22 @@
 # Document Ingestor
 
+## Summary
+
+![Document Ingestor Architecture Diagram](images/architecture.png "Document Ingestor Architecture Diagram")
+
+The 'Document Ingestor' is implemented with a single Akka Cluster application:
+
+### File Ingestion Stream
+An Akka Stream which uses the Alpakka File Connector to consume filenames from a directory and push them to the `Worker Manager`
+
+### Worker Manager
+A Cluster Singleton Actor which stores the `Work` sent to it by the ingestion stream (using Event Sourcing via Akka Persistence) and sends `Work` to `Worker` actors when they're available.
+
+### Worker Actors
+Register with the `Worker Manager` to receive `Work` then execute an Akka Stream using the `Work` as input. 
+
+The `Worker` Actors ingest the file data and perform the validation process on that file data.
+
 ## Quick Start
 
 Getting the example application up and running for local development requires 2 steps:

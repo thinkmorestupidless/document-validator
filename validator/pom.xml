@@ -14,7 +14,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <akkaversion>2.6.4</akkaversion>
         <sbtversion>2.13</sbtversion>
-        <scalaversion>2.13.1</scalaversion>
+        <scalaversion>2.13.9</scalaversion>
     </properties>
     <!-- set up build process of this project -->
 
